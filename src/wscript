@@ -1,0 +1,9 @@
+def build(bld):
+    bld.recurse('jubatus')
+
+    bld.program(
+        source = 'main.cpp',
+        target = 'jubadump',
+        use = 'PFICOMMON jubatus_dump'
+        )
+

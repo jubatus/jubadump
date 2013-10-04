@@ -29,15 +29,17 @@ namespace dump {
 
 template <typename T, typename D>
 bool read_and_dump(std::ifstream& ifs, pfi::text::json::json& js) {
+  ifs.exceptions(std::ifstream::failbit);
   pfi::data::serialization::binary_iarchive ia(ifs);
   T data;
-  ia >> data;
-  if (!ia) {
+  try {
+    ia >> data;
+  } catch(std::ios_base::failure& e) {
     std::cerr << "Input stream reached end of file." << std::endl;
     return false;
   }
-  std::ifstream::pos_type pos = ifs.tellg();
-  if (ifs.get() != -1) {
+  if (ifs.peek() != -1) {
+    std::ifstream::pos_type pos = ifs.tellg();
     std::cerr << "Input stream remains. Position: " << pos << std::endl;
     return false;
   }

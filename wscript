@@ -12,6 +12,7 @@ def configure(conf):
 
   conf.check_cfg(package = 'pficommon', args = '--cflags --libs')
   conf.check_cfg(package = 'jubatus', args = '--cflags --libs')
+  conf.check_cxx(lib = 'msgpack')
   #conf.check_cxx(lib='jubastorage')
 
 def build(bld):

@@ -17,6 +17,7 @@
 #include <iostream>
 #include <string>
 
+#include <msgpack.hpp>
 #include <pficommon/data/serialization/unordered_map.h>
 #include <pficommon/text/json.h>
 
@@ -24,16 +25,32 @@
 #include "jubatus/dump/recommender.hpp"
 #include "jubatus/dump/classifier.hpp"
 
+#include <jubatus/core/common/big_endian.hpp>
+
+using jubatus::core::common::read_big_endian;
+
 namespace jubatus {
 namespace dump {
 
 template <typename T, typename D>
 bool read_and_dump(std::ifstream& ifs, pfi::text::json::json& js) {
+  // TODO(unno): This implementation ignores checksums, version, and all other
+  // check codes. We need to re-implemenet such process like
+  // jubatus::server::framework::save_server/load_server, or to use these
+  // methods to show file format errors.
+
   ifs.exceptions(std::ifstream::failbit);
-  pfi::data::serialization::binary_iarchive ia(ifs);
-  T data;
+  uint64_t user_data_size;
+  std::vector<char> user_data_buf;
   try {
-    ia >> data;
+    char header_buf[48];
+    ifs.read(header_buf, 48);
+    uint64_t system_data_size = read_big_endian<uint64_t>(&header_buf[32]);
+    user_data_size = read_big_endian<uint64_t>(&header_buf[40]);
+
+    ifs.ignore(system_data_size);
+    user_data_buf.resize(user_data_size);
+    ifs.read(&user_data_buf[0], user_data_size);
   } catch(std::ios_base::failure& e) {
     std::cerr << "Input stream reached end of file." << std::endl;
     return false;
@@ -43,13 +60,22 @@ bool read_and_dump(std::ifstream& ifs, pfi::text::json::json& js) {
     std::cerr << "Input stream remains. Position: " << pos << std::endl;
     return false;
   }
+  ifs.close();
+  
+  msgpack::unpacked msg;
+  msgpack::unpack(&msg, user_data_buf.data(), user_data_buf.size());
+  msgpack::object obj = msg.get();
+
+  T data;
+  // obj[0] is the version of the saved model file
+  obj.via.array.ptr[1].convert(&data);
 
   D dump(data);
   js = pfi::text::json::to_json(dump);
   return true;
 }
 
-int run(const std::string& path, const std::string& type) {
+int run(const std::string& path, const std::string& type) try {
   std::ifstream ifs(path.c_str());
   if (!ifs) {
     std::cerr << "Cannot open: " << path << std::endl;
@@ -75,6 +101,10 @@ int run(const std::string& path, const std::string& type) {
   }
   js.pretty(std::cout, true);
   return 0;
+} catch (msgpack::type_error& e) {
+  std::cerr << "Cannot read the file \"" << path
+            << "\" as \"" << type << "\"" << std::endl;
+  return -1;
 }
 
 }  // namespace dump

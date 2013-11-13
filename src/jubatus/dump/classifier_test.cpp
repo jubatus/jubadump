@@ -17,7 +17,6 @@
 #include <sstream>
 
 #include <gtest/gtest.h>
-#include <pficommon/lang/scoped_ptr.h>
 
 #include <jubatus/core/driver/classifier.hpp>
 #include <jubatus/core/storage/storage_factory.hpp>
@@ -30,19 +29,23 @@ namespace jubatus {
 namespace dump {
 
 TEST(classifier, trivial) {
-  stringstream ss;
+  msgpack::sbuffer sbuf;
   {
-    pfi::lang::scoped_ptr<jubatus::core::storage::storage_base> s
-        (jubatus::core::storage::storage_factory::create_storage("local"));
+    jubatus::util::lang::shared_ptr<jubatus::core::storage::storage_base> s
+        = jubatus::core::storage::storage_factory::create_storage("local");
 
     s->set3("f1", "k1", jubatus::core::storage::val3_t(1.0, 2.0, 3.0));
-    s->save(ss);
+
+    msgpack::packer<msgpack::sbuffer> pk(sbuf);
+    s->pack(pk);
   }
 
   {
+    msgpack::unpacked msg;
+    msgpack::unpack(&msg, sbuf.data(), sbuf.size());
+    
     local_storage s;
-    pfi::data::serialization::binary_iarchive ia(ss);
-    ia >> s;
+    msg.get().convert(&s);
 
     EXPECT_EQ(1u, s.tbl_.size());
     EXPECT_EQ(1u, s.tbl_["f1"].size());

@@ -23,8 +23,6 @@
 #include <string>
 
 #include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
-#include <pficommon/data/unordered_map.h>
 
 #include "types.hpp"
 #include "weight_manager.hpp"
@@ -32,37 +30,26 @@
 namespace jubatus {
 namespace dump {
 
-typedef pfi::data::unordered_map<uint64_t, float> row_t;
-typedef pfi::data::unordered_map<std::string, row_t> tbl_t;
+typedef std::map<uint64_t, float> row_t;
+typedef std::map<std::string, row_t> tbl_t;
 
 typedef std::map<uint64_t, float> imap_float_t;
 
 struct sparse_matrix_storage {
-  template <class Ar>
-  void serialize(Ar& ar) {
-    ar & MEMBER(tbl_) & MEMBER(column2id_);
-  }
-
   tbl_t tbl_;
   key_manager column2id_;
+
+  MSGPACK_DEFINE(tbl_, column2id_);
 };
 
 struct inverted_index_storage {
-  template <class Ar>
-  void serialize(Ar& ar) {
-    ar
-        & MEMBER(inv_)
-        & MEMBER(inv_diff_)
-        & MEMBER(column2norm_)
-        & MEMBER(column2norm_diff_)
-        & MEMBER(column2id_);
-  }
-
   tbl_t inv_;
   tbl_t inv_diff_;
   imap_float_t column2norm_;
   imap_float_t column2norm_diff_;
   key_manager column2id_;
+
+  MSGPACK_DEFINE(inv_, inv_diff_, column2norm_, column2norm_diff_, column2id_);
 };
 
 struct inverted_index_dump {
@@ -89,17 +76,24 @@ struct inverted_index_dump {
 };
 
 template <typename S>
-struct recommender {
+struct recommender_base {
   typedef S storage_type;
 
   sparse_matrix_storage original;
   storage_type storage;
+
+  MSGPACK_DEFINE(original, storage);
+};
+
+template <typename S>
+struct recommender {
+  recommender_base<S> base;
   weight_manager weights;
 
-  template <class Ar>
-  void serialize(Ar& ar) {
-    ar & MEMBER(original) & MEMBER(storage) & MEMBER(weights);
-  }
+  // TODO(unno):
+  // The current implementation (278e17c89687acc6039e1db8d64b9e81a2e51389)
+  // does not read 'base.original'.  We need to fix jubatus.
+  MSGPACK_DEFINE(base.storage, weights);
 };
 
 template <typename S, typename D>
@@ -108,8 +102,8 @@ struct recommender_dump {
   typedef D dump_type;
 
   explicit recommender_dump(const recommender<storage_type>& recommender)
-      : original(recommender.original),
-        index(recommender.storage),
+      : original(recommender.base.original),
+        index(recommender.base.storage),
         weights(recommender.weights) {
   }
 

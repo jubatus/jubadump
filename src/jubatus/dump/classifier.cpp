@@ -18,20 +18,20 @@
 
 #include <string>
 
-#include <pficommon/data/unordered_map.h>
+#include <jubatus/util/data/unordered_map.h>
 
-using pfi::data::unordered_map;
+using jubatus::util::data::unordered_map;
 
 namespace jubatus {
 namespace dump {
 
 local_storage_dump::local_storage_dump(const local_storage& storage) {
-  for (unordered_map<std::string, unordered_map<uint64_t, val3_t> >
+  for (std::map<std::string, std::map<uint64_t, val3_t> >
            ::const_iterator it = storage.tbl_.begin();
        it != storage.tbl_.end(); ++it) {
     const std::string& feature = it->first;
 
-    for (unordered_map<uint64_t, val3_t>::const_iterator
+    for (std::map<uint64_t, val3_t>::const_iterator
              it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
       const std::string& label = storage.class2id_.id2key_[it2->first];
       weight[feature][label] = it2->second;

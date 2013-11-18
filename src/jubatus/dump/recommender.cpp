@@ -18,7 +18,7 @@
 
 #include <string>
 
-#include <pficommon/lang/cast.h>
+#include <jubatus/util/lang/cast.h>
 
 namespace jubatus {
 namespace dump {
@@ -33,7 +33,7 @@ inverted_index_dump::inverted_index_dump(
          it2 != it->second.end(); ++it2) {
       uint64_t row_id = it2->first;
       float value = it2->second;
-      inv[feature][pfi::lang::lexical_cast<std::string>(row_id)] = value;
+      inv[feature][jubatus::util::lang::lexical_cast<std::string>(row_id)] = value;
     }
   }
 }
@@ -48,7 +48,7 @@ inverted_index_dump::inverted_index_dump(
          it2 != it->second.end(); ++it2) {
       uint64_t row_id = it2->first;
       float value = it2->second;
-      inv[feature][pfi::lang::lexical_cast<std::string>(row_id)] = value;
+      inv[feature][jubatus::util::lang::lexical_cast<std::string>(row_id)] = value;
     }
   }
 }

@@ -17,48 +17,35 @@
 #ifndef JUBATUS_DUMP_TYPES_HPP_
 #define JUBATUS_DUMP_TYPES_HPP_
 
+#include <map>
 #include <stdint.h>
 #include <string>
 #include <vector>
 
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
-#include <pficommon/data/unordered_map.h>
+#include <msgpack.hpp>
 
 namespace jubatus {
 namespace dump {
 
 struct key_manager {
-  pfi::data::unordered_map<std::string, uint64_t> key2id_;
+  std::map<std::string, uint64_t> key2id_;
   std::vector<std::string> id2key_;
 
-  template <class Ar>
-  void serialize(Ar& ar) {
-    ar & MEMBER(key2id_) & MEMBER(id2key_);
-  }
+  MSGPACK_DEFINE(key2id_, id2key_);
 };
 
 struct counter {
-  pfi::data::unordered_map<std::string, unsigned> data_;
+  std::map<std::string, unsigned> data_;
 
-  template<class Archiver>
-  void serialize(Archiver& ar) {
-    ar & MEMBER(data_);
-  }
+  MSGPACK_DEFINE(data_);
 };
 
 struct keyword_weights {
   size_t document_count_;
   counter document_frequencies_;
-  pfi::data::unordered_map<std::string, float> weights_;
+  std::map<std::string, float> weights_;
 
-  template<class Archiver>
-  void serialize(Archiver& ar) {
-    ar
-        & MEMBER(document_count_)
-        & MEMBER(document_frequencies_)
-        & MEMBER(weights_);
-  }
+  MSGPACK_DEFINE(document_count_, document_frequencies_, weights_);
 };
 
 }  // namespace dump

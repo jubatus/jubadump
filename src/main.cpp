@@ -18,14 +18,13 @@
 #include <string>
 
 #include <msgpack.hpp>
-#include <pficommon/data/serialization/unordered_map.h>
-#include <pficommon/text/json.h>
+#include <jubatus/core/common/big_endian.hpp>
+#include <jubatus/util/data/serialization/unordered_map.h>
+#include <jubatus/util/text/json.h>
 
 #include "third_party/cmdline/cmdline.h"
 #include "jubatus/dump/recommender.hpp"
 #include "jubatus/dump/classifier.hpp"
-
-#include <jubatus/core/common/big_endian.hpp>
 
 using jubatus::core::common::read_big_endian;
 
@@ -33,7 +32,7 @@ namespace jubatus {
 namespace dump {
 
 template <typename T, typename D>
-bool read_and_dump(std::ifstream& ifs, pfi::text::json::json& js) {
+bool read_and_dump(std::ifstream& ifs, jubatus::util::text::json::json& js) {
   // TODO(unno): This implementation ignores checksums, version, and all other
   // check codes. We need to re-implemenet such process like
   // jubatus::server::framework::save_server/load_server, or to use these
@@ -71,7 +70,7 @@ bool read_and_dump(std::ifstream& ifs, pfi::text::json::json& js) {
   obj.via.array.ptr[1].convert(&data);
 
   D dump(data);
-  js = pfi::text::json::to_json(dump);
+  js = jubatus::util::text::json::to_json(dump);
   return true;
 }
 
@@ -82,7 +81,7 @@ int run(const std::string& path, const std::string& type) try {
     return -1;
   }
 
-  pfi::text::json::json js;
+  jubatus::util::text::json::json js;
   bool result;
   if (type == "classifier") {
     result = read_and_dump<classifier<local_storage>,

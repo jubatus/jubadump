@@ -18,9 +18,9 @@
 
 #include <string>
 
-#include <pficommon/data/unordered_map.h>
+#include <jubatus/util/data/unordered_map.h>
 
-using pfi::data::unordered_map;
+using jubatus::util::data::unordered_map;
 
 namespace jubatus {
 namespace dump {

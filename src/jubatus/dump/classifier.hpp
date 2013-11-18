@@ -22,7 +22,7 @@
 #include <map>
 #include <string>
 
-#include <pficommon/data/serialization.h>
+#include <jubatus/util/data/serialization.h>
 
 #include "types.hpp"
 #include "weight_manager.hpp"
@@ -39,7 +39,7 @@ struct val3_t {
 
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(v1) & MEMBER(v2) & MEMBER(v3);
+    ar & JUBA_MEMBER(v1) & JUBA_MEMBER(v2) & JUBA_MEMBER(v3);
   }
 };
 
@@ -57,7 +57,7 @@ struct local_storage_dump {
 
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(weight);
+    ar & JUBA_MEMBER(weight);
   }
 };
 
@@ -86,7 +86,7 @@ struct classifier_dump {
 
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(storage) & MEMBER(weights);
+    ar & JUBA_MEMBER(storage) & JUBA_MEMBER(weights);
   }
 };
 

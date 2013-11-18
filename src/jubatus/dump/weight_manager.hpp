@@ -22,9 +22,9 @@
 #include <string>
 
 #include <msgpack.hpp>
-#include <pficommon/data/unordered_map.h>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
+#include <jubatus/util/data/unordered_map.h>
+#include <jubatus/util/data/serialization.h>
+#include <jubatus/util/data/serialization/unordered_map.h>
 
 #include "types.hpp"
 
@@ -47,8 +47,8 @@ struct weight_manager_dump {
   template <class Ar>
   void serialize(Ar& ar) {
     ar
-        & MEMBER(document_count)
-        & MEMBER(document_frequencies);
+        & JUBA_MEMBER(document_count)
+        & JUBA_MEMBER(document_frequencies);
   }
 };
 

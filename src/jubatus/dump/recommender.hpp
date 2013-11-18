@@ -22,7 +22,7 @@
 #include <map>
 #include <string>
 
-#include <pficommon/data/serialization.h>
+#include <jubatus/util/data/serialization.h>
 
 #include "types.hpp"
 #include "weight_manager.hpp"
@@ -63,7 +63,7 @@ struct inverted_index_dump {
 
     template <class Ar>
     void serialize(Ar& ar) {
-      ar & MEMBER(column) & MEMBER(norm);
+      ar & JUBA_MEMBER(column) & JUBA_MEMBER(norm);
     }
   };
 
@@ -71,7 +71,7 @@ struct inverted_index_dump {
 
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(inv);
+    ar & JUBA_MEMBER(inv);
   }
 };
 
@@ -113,7 +113,7 @@ struct recommender_dump {
 
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(original) & MEMBER(index) & MEMBER(weights);
+    ar & JUBA_MEMBER(original) & JUBA_MEMBER(index) & JUBA_MEMBER(weights);
   }
 };
 

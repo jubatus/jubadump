@@ -18,7 +18,6 @@
 
 #include <gtest/gtest.h>
 #include <jubatus/core/common/key_manager.hpp>
-#include <jubatus/core/common/unordered_map.hpp>
 
 #include "types.hpp"
 

@@ -23,21 +23,21 @@
 #include <string>
 #include <vector>
 
-#include <pficommon/data/unordered_map.h>
+#include <jubatus/util/data/unordered_map.h>
 
 namespace jubadump {
 
 struct bit_vector {
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(bits_) & MEMBER(bit_num_);
+    ar & JUBA_MEMBER(bits_) & JUBA_MEMBER(bit_num_);
   }
 
   std::vector<uint64_t> bits_;
   uint64_t bit_num_;
 };
 
-typedef pfi::data::unordered_map<std::string, bit_vector> bit_table_t;
+typedef jubatus::util::data::unordered_map<std::string, bit_vector> bit_table_t;
 
 struct bit_index_storage {
   bit_table_t bitvals_;
@@ -45,12 +45,13 @@ struct bit_index_storage {
 
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(bitvals_) & MEMBER(bitvals_diff_);
+    ar & JUBA_MEMBER(bitvals_) & JUBA_MEMBER(bitvals_diff_);
   }
 };
 
 struct lsh {
-  pfi::data::unordered_map<std::string, std::vector<float> > column2baseval_;
+  jubatus::util::data::unordered_map<std::string, std::vector<float> >
+    column2baseval_;
   bit_index_storage row2lshvals_;
 
   template <class Ar>
@@ -64,7 +65,7 @@ struct bit_index_dump {
 
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(table);
+    ar & JUBA_MEMBER(table);
   }
 };
 

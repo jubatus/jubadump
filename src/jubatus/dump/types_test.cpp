@@ -17,12 +17,9 @@
 #include <sstream>
 
 #include <gtest/gtest.h>
-#include <pficommon/data/serialization.h>
 #include <jubatus/core/common/key_manager.hpp>
 
 #include "types.hpp"
-
-using std::stringstream;
 
 namespace jubatus {
 namespace dump {
@@ -32,13 +29,14 @@ TEST(key_manager, trivial) {
   uint64_t id1 = km.get_id("key1");
   uint64_t id2 = km.get_id("key2");
 
-  stringstream ss;
-  pfi::data::serialization::binary_oarchive oa(ss);
-  oa << km;
+  msgpack::sbuffer sbuf;
+  msgpack::pack(sbuf, km);
 
-  pfi::data::serialization::binary_iarchive ia(ss);
+  msgpack::unpacked msg;
+  msgpack::unpack(&msg, sbuf.data(), sbuf.size());
+
   key_manager k;
-  ia >> k;
+  msg.get().convert(&k);
 
   ASSERT_EQ(2u, k.id2key_.size());
   EXPECT_EQ("key1", k.id2key_[id1]);

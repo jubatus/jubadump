@@ -22,9 +22,7 @@
 #include <map>
 #include <string>
 
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
-#include <pficommon/data/unordered_map.h>
+#include <jubatus/util/data/serialization.h>
 
 #include "types.hpp"
 #include "weight_manager.hpp"
@@ -37,21 +35,19 @@ struct val3_t {
   double v2;
   double v3;
 
+  MSGPACK_DEFINE(v1, v2, v3);
+
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(v1) & MEMBER(v2) & MEMBER(v3);
+    ar & JUBA_MEMBER(v1) & JUBA_MEMBER(v2) & JUBA_MEMBER(v3);
   }
 };
 
 struct local_storage {
-  pfi::data::unordered_map<std::string,
-                           pfi::data::unordered_map<uint64_t, val3_t> > tbl_;
+  std::map<std::string, std::map<uint64_t, val3_t> > tbl_;
   key_manager class2id_;
 
-  template <class Ar>
-  void serialize(Ar& ar) {
-    ar & MEMBER(tbl_) & MEMBER(class2id_);
-  }
+  MSGPACK_DEFINE(tbl_, class2id_);
 };
 
 struct local_storage_dump {
@@ -61,7 +57,7 @@ struct local_storage_dump {
 
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(weight);
+    ar & JUBA_MEMBER(weight);
   }
 };
 
@@ -72,10 +68,7 @@ struct classifier {
   storage_type storage;
   weight_manager weights;
 
-  template <class Ar>
-  void serialize(Ar& ar) {
-    ar & MEMBER(storage) & MEMBER(weights);
-  }
+  MSGPACK_DEFINE(storage, weights);
 };
 
 template <typename S, typename D>
@@ -93,7 +86,7 @@ struct classifier_dump {
 
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(storage) & MEMBER(weights);
+    ar & JUBA_MEMBER(storage) & JUBA_MEMBER(weights);
   }
 };
 

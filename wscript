@@ -10,9 +10,8 @@ def configure(conf):
   conf.load('compiler_cxx')
   conf.load('unittest_gtest')
 
-  conf.check_cfg(package = 'pficommon', args = '--cflags --libs')
   conf.check_cfg(package = 'jubatus', args = '--cflags --libs')
-  #conf.check_cxx(lib='jubastorage')
+  conf.check_cxx(lib = 'msgpack')
 
 def build(bld):
   bld.recurse('src')

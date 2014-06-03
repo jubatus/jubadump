@@ -20,6 +20,7 @@
 
 #include <jubatus/core/driver/classifier.hpp>
 #include <jubatus/core/storage/storage_factory.hpp>
+#include <jubatus/core/framework/stream_writer.hpp>
 
 #include "classifier.hpp"
 
@@ -29,20 +30,22 @@ namespace jubatus {
 namespace dump {
 
 TEST(classifier, trivial) {
-  msgpack::sbuffer sbuf;
+  msgpack::sbuffer buf;
   {
     jubatus::util::lang::shared_ptr<jubatus::core::storage::storage_base> s
         = jubatus::core::storage::storage_factory::create_storage("local");
 
     s->set3("f1", "k1", jubatus::core::storage::val3_t(1.0, 2.0, 3.0));
 
-    msgpack::packer<msgpack::sbuffer> pk(sbuf);
-    s->pack(pk);
+    jubatus::core::framework::stream_writer<msgpack::sbuffer> st(buf);
+    jubatus::core::framework::jubatus_packer jp(st);
+    jubatus::core::framework::packer packer(jp);
+    s->pack(packer);
   }
 
   {
     msgpack::unpacked msg;
-    msgpack::unpack(&msg, sbuf.data(), sbuf.size());
+    msgpack::unpack(&msg, buf.data(), buf.size());
     
     local_storage s;
     msg.get().convert(&s);

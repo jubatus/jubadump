@@ -33,8 +33,14 @@ local_storage_dump::local_storage_dump(const local_storage& storage) {
 
     for (std::map<uint64_t, val3_t>::const_iterator
              it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
-      const std::string& label = storage.class2id_.id2key_[it2->first];
-      weight[feature][label] = it2->second;
+      jubatus::util::data::unordered_map<uint64_t, std::string>::const_iterator
+          key = storage.class2id_.id2key_.find(it2->first);
+      if (key != storage.class2id_.id2key_.end()) {
+        const std::string& label = key->second;
+        weight[feature][label] = it2->second;
+      } else {
+        throw std::runtime_error("unknown key found in storage");
+      }
     }
   }
 }

@@ -18,3 +18,4 @@ def build(bld):
 
     make_test('types_test.cpp')
     make_test('classifier_test.cpp')
+    make_test('weight_manager_test.cpp')

@@ -23,10 +23,13 @@
 namespace jubatus {
 namespace dump {
 
-inverted_index_dump::inverted_index_dump(
-    const inverted_index_storage& storage) {
-  for (tbl_t::const_iterator it = storage.inv_.begin();
-       it != storage.inv_.end(); ++it) {
+namespace {
+
+void convert_table(
+    const tbl_t& tbl,
+    std::map<std::string, std::map<std::string, float> >& inv) {
+  for (tbl_t::const_iterator it = tbl.begin();
+       it != tbl.end(); ++it) {
     const std::string& feature = it->first;
 
     for (row_t::const_iterator it2 = it->second.begin();
@@ -38,19 +41,16 @@ inverted_index_dump::inverted_index_dump(
   }
 }
 
+}  // namespace
+
+inverted_index_dump::inverted_index_dump(
+    const inverted_index_storage& storage) {
+  convert_table(storage.inv_, inv);
+}
+
 inverted_index_dump::inverted_index_dump(
     const sparse_matrix_storage& storage) {
-  for (tbl_t::const_iterator it = storage.tbl_.begin();
-       it != storage.tbl_.end(); ++it) {
-    const std::string& feature = it->first;
-
-    for (row_t::const_iterator it2 = it->second.begin();
-         it2 != it->second.end(); ++it2) {
-      uint64_t row_id = it2->first;
-      float value = it2->second;
-      inv[feature][jubatus::util::lang::lexical_cast<std::string>(row_id)] = value;
-    }
-  }
+  convert_table(storage.tbl_, inv);
 }
 
 }  // namespace dump

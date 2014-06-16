@@ -43,8 +43,6 @@ TEST(weight_manager, trivial) {
     msgpack::unpacked msg;
     msgpack::unpack(&msg, buf.data(), buf.size());
 
-    std::cout << msg.get() << std::endl;
-    
     weight_manager wm;
     msg.get().convert(&wm);
 

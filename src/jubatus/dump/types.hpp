@@ -38,7 +38,7 @@ struct key_manager {
 };
 
 struct counter {
-  std::map<std::string, unsigned> data_;
+  std::map<std::string, double> data_;
 
   MSGPACK_DEFINE(data_);
 };
@@ -49,6 +49,12 @@ struct keyword_weights {
   std::map<std::string, float> weights_;
 
   MSGPACK_DEFINE(document_count_, document_frequencies_, weights_);
+};
+
+struct version {
+  uint64_t version_number_;
+
+  MSGPACK_DEFINE(version_number_);
 };
 
 }  // namespace dump

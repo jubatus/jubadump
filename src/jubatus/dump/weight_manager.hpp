@@ -42,12 +42,14 @@ struct weight_manager {
 struct weight_manager_dump {
   explicit weight_manager_dump(const weight_manager& weights);
 
+  uint64_t version_number;
   uint32_t document_count;
   std::map<std::string, double> document_frequencies;
 
   template <class Ar>
   void serialize(Ar& ar) {
     ar
+        & JUBA_MEMBER(version_number)
         & JUBA_MEMBER(document_count)
         & JUBA_MEMBER(document_frequencies);
   }

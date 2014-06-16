@@ -32,6 +32,7 @@ weight_manager_dump::weight_manager_dump(const weight_manager& weights) {
            it = diff.begin(); it != diff.end(); ++it) {
     document_frequencies[it->first] += it->second;
   }
+  version_number = weights.version_.version_number_;
 }
 
 }  // namespace dump

@@ -20,6 +20,8 @@
 
 #include <jubatus/util/lang/cast.h>
 
+using jubatus::util::data::unordered_map;
+
 namespace jubatus {
 namespace dump {
 
@@ -27,6 +29,7 @@ namespace {
 
 void convert_table(
     const tbl_t& tbl,
+    const unordered_map<uint64_t, std::string>& id2key,
     std::map<std::string, std::map<std::string, float> >& inv) {
   for (tbl_t::const_iterator it = tbl.begin();
        it != tbl.end(); ++it) {
@@ -35,8 +38,19 @@ void convert_table(
     for (row_t::const_iterator it2 = it->second.begin();
          it2 != it->second.end(); ++it2) {
       uint64_t row_id = it2->first;
+      unordered_map<uint64_t, std::string>::const_iterator id_it
+          = id2key.find(row_id);
+
+      // TODO(unno): How to treat row_id when it is not found in key_manager?
+      if (id_it == id2key.end()) {
+        std::string message = "ID is not found. This file is broken: "
+            + jubatus::util::lang::lexical_cast<std::string>(row_id);
+        throw std::runtime_error(message);
+      }
+
+      std::string id = id_it->second;
       float value = it2->second;
-      inv[feature][jubatus::util::lang::lexical_cast<std::string>(row_id)] = value;
+      inv[feature][id] = value;
     }
   }
 }
@@ -45,12 +59,12 @@ void convert_table(
 
 inverted_index_dump::inverted_index_dump(
     const inverted_index_storage& storage) {
-  convert_table(storage.inv_, inv);
+  convert_table(storage.inv_, storage.column2id_.id2key_, inv);
 }
 
 inverted_index_dump::inverted_index_dump(
     const sparse_matrix_storage& storage) {
-  convert_table(storage.tbl_, inv);
+  convert_table(storage.tbl_, storage.column2id_.id2key_, inv);
 }
 
 }  // namespace dump

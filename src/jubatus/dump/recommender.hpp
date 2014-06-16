@@ -75,45 +75,53 @@ struct inverted_index_dump {
   }
 };
 
-template <typename S>
-struct recommender_base {
-  typedef S storage_type;
-
+struct inverted_index {
   sparse_matrix_storage original;
-  storage_type storage;
+  inverted_index_storage storage;
 
   MSGPACK_DEFINE(original, storage);
 };
 
-template <typename S>
+template <typename R>
 struct recommender {
-  recommender_base<S> base;
+  R index;
   weight_manager weights;
 
-  // TODO(unno):
-  // The current implementation (278e17c89687acc6039e1db8d64b9e81a2e51389)
-  // does not read 'base.original'.  We need to fix jubatus.
-  MSGPACK_DEFINE(base.storage, weights);
+  MSGPACK_DEFINE(index, weights);
 };
 
-template <typename S, typename D>
+struct inverted_index_recommender_dump {
+  inverted_index_dump original;
+  inverted_index_dump storage;
+
+  explicit
+  inverted_index_recommender_dump(const inverted_index& index)
+      : original(index.original),
+        storage(index.storage) {
+  }
+
+  template <typename Ar>
+  void serialize(Ar& ar) {
+    ar & JUBA_MEMBER(original) & JUBA_MEMBER(storage);
+  }
+};
+
+template <typename D>
 struct recommender_dump {
-  typedef S storage_type;
   typedef D dump_type;
 
-  explicit recommender_dump(const recommender<storage_type>& recommender)
-      : original(recommender.base.original),
-        index(recommender.base.storage),
+  template <typename R>
+  explicit recommender_dump(const recommender<R>& recommender)
+      : index(recommender.index),
         weights(recommender.weights) {
   }
 
-  inverted_index_dump original;
   dump_type index;
   weight_manager_dump weights;
 
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(original) & JUBA_MEMBER(index) & JUBA_MEMBER(weights);
+    ar & JUBA_MEMBER(index) & JUBA_MEMBER(weights);
   }
 };
 

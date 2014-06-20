@@ -26,12 +26,13 @@ weight_manager_dump::weight_manager_dump(const weight_manager& weights) {
       weights.diff_weights_.document_count_
       + weights.master_weights_.document_count_;
   document_frequencies = weights.master_weights_.document_frequencies_.data_;
-  const std::map<std::string, unsigned>&
+  const std::map<std::string, double>&
       diff = weights.diff_weights_.document_frequencies_.data_;
-  for (std::map<std::string, unsigned>::const_iterator
+  for (std::map<std::string, double>::const_iterator
            it = diff.begin(); it != diff.end(); ++it) {
     document_frequencies[it->first] += it->second;
   }
+  version_number = weights.version_.version_number_;
 }
 
 }  // namespace dump

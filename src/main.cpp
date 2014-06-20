@@ -87,8 +87,9 @@ int run(const std::string& path, const std::string& type) try {
     result = read_and_dump<classifier<local_storage>,
         classifier_dump<local_storage, local_storage_dump> >(ifs, js);
   } else if (type == "inverted_index") {
-    result = read_and_dump<recommender<inverted_index_storage>,
-        recommender_dump<inverted_index_storage, inverted_index_dump> >(
+    result = read_and_dump<
+      recommender<inverted_index>,
+      recommender_dump<inverted_index_recommender_dump> >(
             ifs, js);
   } else {
     std::cerr << "Unsupported file format: " << type << std::endl;

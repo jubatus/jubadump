@@ -9,7 +9,7 @@ Requirements
 
 - g++
 - pkg-config
-- jubatus
+- jubatus_core
 - msgpack
 
 

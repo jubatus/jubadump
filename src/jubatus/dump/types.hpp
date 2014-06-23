@@ -23,19 +23,22 @@
 #include <vector>
 
 #include <msgpack.hpp>
+#include <jubatus/util/data/unordered_map.h>
+#include <jubatus/core/common/unordered_map.hpp>
 
 namespace jubatus {
 namespace dump {
 
 struct key_manager {
-  std::map<std::string, uint64_t> key2id_;
-  std::vector<std::string> id2key_;
+  jubatus::util::data::unordered_map<std::string, uint64_t> key2id_;
+  jubatus::util::data::unordered_map<uint64_t, std::string> id2key_;
+  uint64_t next_id_;
 
-  MSGPACK_DEFINE(key2id_, id2key_);
+  MSGPACK_DEFINE(key2id_, id2key_, next_id_);
 };
 
 struct counter {
-  std::map<std::string, unsigned> data_;
+  std::map<std::string, double> data_;
 
   MSGPACK_DEFINE(data_);
 };
@@ -46,6 +49,12 @@ struct keyword_weights {
   std::map<std::string, float> weights_;
 
   MSGPACK_DEFINE(document_count_, document_frequencies_, weights_);
+};
+
+struct version {
+  uint64_t version_number_;
+
+  MSGPACK_DEFINE(version_number_);
 };
 
 }  // namespace dump

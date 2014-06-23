@@ -10,7 +10,7 @@ def configure(conf):
   conf.load('compiler_cxx')
   conf.load('unittest_gtest')
 
-  conf.check_cfg(package = 'jubatus', args = '--cflags --libs')
+  conf.check_cfg(package = 'jubatus_core', args = '--cflags --libs')
   conf.check_cxx(lib = 'msgpack')
 
 def build(bld):

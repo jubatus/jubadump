@@ -32,21 +32,24 @@ namespace jubatus {
 namespace dump {
 
 struct weight_manager {
+  version version_;
   keyword_weights diff_weights_;
   keyword_weights master_weights_;
 
-  MSGPACK_DEFINE(diff_weights_, master_weights_);
+  MSGPACK_DEFINE(version_, diff_weights_, master_weights_);
 };
 
 struct weight_manager_dump {
   explicit weight_manager_dump(const weight_manager& weights);
 
+  uint64_t version_number;
   uint32_t document_count;
-  std::map<std::string, unsigned> document_frequencies;
+  std::map<std::string, double> document_frequencies;
 
   template <class Ar>
   void serialize(Ar& ar) {
     ar
+        & JUBA_MEMBER(version_number)
         & JUBA_MEMBER(document_count)
         & JUBA_MEMBER(document_frequencies);
   }

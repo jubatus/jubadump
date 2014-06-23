@@ -13,8 +13,9 @@ def build(bld):
             features = 'gtest',
             target = src[0: src.find('.')],
             source = src,
-            use = 'jubatus_dump JUBATUS',
+            use = 'jubatus_dump JUBATUS_CORE',
             )
 
     make_test('types_test.cpp')
     make_test('classifier_test.cpp')
+    make_test('weight_manager_test.cpp')

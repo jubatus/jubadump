@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2014 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,47 +14,41 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <sstream>
-
 #include <gtest/gtest.h>
 
-#include <jubatus/core/driver/classifier.hpp>
-#include <jubatus/core/storage/storage_factory.hpp>
+
+#include <jubatus/core/fv_converter/weight_manager.hpp>
 #include <jubatus/core/framework/stream_writer.hpp>
 
-#include "classifier.hpp"
-
-using std::stringstream;
+#include "weight_manager.hpp"
 
 namespace jubatus {
 namespace dump {
 
-TEST(classifier, trivial) {
+TEST(weight_manager, trivial) {
   msgpack::sbuffer buf;
   {
-    jubatus::util::lang::shared_ptr<jubatus::core::storage::storage_base> s
-        = jubatus::core::storage::storage_factory::create_storage("local");
-
-    s->set3("f1", "k1", jubatus::core::storage::val3_t(1.0, 2.0, 3.0));
+    jubatus::core::fv_converter::weight_manager wm;
+    jubatus::core::common::sfv_t fv;
+    fv.push_back(std::make_pair("a", 1));
+    wm.update_weight(fv);
 
     jubatus::core::framework::stream_writer<msgpack::sbuffer> st(buf);
     jubatus::core::framework::jubatus_packer jp(st);
     jubatus::core::framework::packer packer(jp);
-    s->pack(packer);
+    wm.pack(packer);
   }
 
   {
     msgpack::unpacked msg;
     msgpack::unpack(&msg, buf.data(), buf.size());
-    
-    local_storage s;
-    msg.get().convert(&s);
 
-    EXPECT_EQ(1u, s.tbl_.size());
-    EXPECT_EQ(1u, s.tbl_["f1"].size());
-    EXPECT_EQ(1.0, s.tbl_["f1"][0].v1);
-    EXPECT_EQ(2.0, s.tbl_["f1"][0].v2);
-    EXPECT_EQ(3.0, s.tbl_["f1"][0].v3);
+    weight_manager wm;
+    msg.get().convert(&wm);
+
+    EXPECT_EQ(0u, wm.version_.version_number_);
+    EXPECT_EQ(1u, wm.diff_weights_.document_count_);
+    EXPECT_EQ(1u, wm.diff_weights_.document_frequencies_.data_.count("a"));
   }
 }
 

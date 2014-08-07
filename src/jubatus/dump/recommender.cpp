@@ -20,37 +20,51 @@
 
 #include <jubatus/util/lang/cast.h>
 
+using jubatus::util::data::unordered_map;
+
 namespace jubatus {
 namespace dump {
 
-inverted_index_dump::inverted_index_dump(
-    const inverted_index_storage& storage) {
-  for (tbl_t::const_iterator it = storage.inv_.begin();
-       it != storage.inv_.end(); ++it) {
+namespace {
+
+void convert_table(
+    const tbl_t& tbl,
+    const unordered_map<uint64_t, std::string>& id2key,
+    std::map<std::string, std::map<std::string, float> >& inv) {
+  for (tbl_t::const_iterator it = tbl.begin();
+       it != tbl.end(); ++it) {
     const std::string& feature = it->first;
 
     for (row_t::const_iterator it2 = it->second.begin();
          it2 != it->second.end(); ++it2) {
       uint64_t row_id = it2->first;
+      unordered_map<uint64_t, std::string>::const_iterator id_it
+          = id2key.find(row_id);
+
+      // TODO(unno): How to treat row_id when it is not found in key_manager?
+      if (id_it == id2key.end()) {
+        std::string message = "ID is not found. This file is broken: "
+            + jubatus::util::lang::lexical_cast<std::string>(row_id);
+        throw std::runtime_error(message);
+      }
+
+      std::string id = id_it->second;
       float value = it2->second;
-      inv[feature][jubatus::util::lang::lexical_cast<std::string>(row_id)] = value;
+      inv[feature][id] = value;
     }
   }
 }
 
+}  // namespace
+
+inverted_index_dump::inverted_index_dump(
+    const inverted_index_storage& storage) {
+  convert_table(storage.inv_, storage.column2id_.id2key_, inv);
+}
+
 inverted_index_dump::inverted_index_dump(
     const sparse_matrix_storage& storage) {
-  for (tbl_t::const_iterator it = storage.tbl_.begin();
-       it != storage.tbl_.end(); ++it) {
-    const std::string& feature = it->first;
-
-    for (row_t::const_iterator it2 = it->second.begin();
-         it2 != it->second.end(); ++it2) {
-      uint64_t row_id = it2->first;
-      float value = it2->second;
-      inv[feature][jubatus::util::lang::lexical_cast<std::string>(row_id)] = value;
-    }
-  }
+  convert_table(storage.tbl_, storage.column2id_.id2key_, inv);
 }
 
 }  // namespace dump

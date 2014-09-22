@@ -35,4 +35,7 @@ Usage
       -t, --type     Format type (string [=classifier])
       -?, --help     print this message
 
+License
+=======
 
+LGPL 2.1

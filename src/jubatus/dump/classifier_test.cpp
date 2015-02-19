@@ -20,6 +20,8 @@
 
 #include <jubatus/core/driver/classifier.hpp>
 #include <jubatus/core/storage/storage_factory.hpp>
+#include <jubatus/core/storage/storage_type.hpp>
+#include <jubatus/core/storage/storage_base.hpp>
 #include <jubatus/core/framework/stream_writer.hpp>
 
 #include "classifier.hpp"

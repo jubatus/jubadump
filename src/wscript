@@ -4,6 +4,6 @@ def build(bld):
     bld.program(
         source = 'main.cpp',
         target = 'jubadump',
-        use = 'MSGPACK jubatus_dump'
+        use = 'MSGPACK JUBATUS_CORE jubatus_dump'
         )
 

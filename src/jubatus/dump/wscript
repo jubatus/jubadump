@@ -3,6 +3,7 @@ def build(bld):
         source = [
             'classifier.cpp',
             'recommender.cpp',
+            'anomaly.cpp',
             'weight_manager.cpp',
             ],
         target = 'jubatus_dump'

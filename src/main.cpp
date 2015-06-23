@@ -118,7 +118,7 @@ int run(const std::string& path) try {
                         e.what());
   }
 
-  if (m.type_ == "classifier") {
+  if (m.type_ == "classifier" || m.type_ == "regression") {
     dump<classifier<local_storage>,
         classifier_dump<local_storage, local_storage_dump> >(m, js);
   } else if (m.type_ == "recommender") {

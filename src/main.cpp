@@ -16,94 +16,150 @@
 
 #include <iostream>
 #include <string>
+#include <exception>
+#include <vector>
 
 #include <msgpack.hpp>
 #include <jubatus/core/common/big_endian.hpp>
+#include <jubatus/core/common/jsonconfig/config.hpp>
+#include <jubatus/core/common/jsonconfig/cast.hpp>
 #include <jubatus/util/data/serialization/unordered_map.h>
 #include <jubatus/util/text/json.h>
+#include <jubatus/util/lang/cast.h>
 
 #include "third_party/cmdline/cmdline.h"
-#include "jubatus/dump/recommender.hpp"
-#include "jubatus/dump/classifier.hpp"
 
+#include "jubatus/dump/classifier.hpp"
+#include "jubatus/dump/recommender.hpp"
+#include "jubatus/dump/anomaly.hpp"
+
+using std::runtime_error;
 using jubatus::core::common::read_big_endian;
+using jubatus::util::lang::lexical_cast;
+using jubatus::util::text::json::from_json;
 
 namespace jubatus {
 namespace dump {
 
-template <typename T, typename D>
-bool read_and_dump(std::ifstream& ifs, jubatus::util::text::json::json& js) {
+struct model {
+  std::string type_;
+  jubatus::core::common::jsonconfig::config config_;
+  std::vector<char> user_data_;
+};
+
+void read(std::ifstream& ifs, model& m) {
   // TODO(unno): This implementation ignores checksums, version, and all other
   // check codes. We need to re-implemenet such process like
   // jubatus::server::framework::save_server/load_server, or to use these
   // methods to show file format errors.
 
   ifs.exceptions(std::ifstream::failbit);
-  uint64_t user_data_size;
-  std::vector<char> user_data_buf;
+
+  std::vector<char> system_data_buf;
   try {
     char header_buf[48];
     ifs.read(header_buf, 48);
-    uint64_t system_data_size = read_big_endian<uint64_t>(&header_buf[32]);
-    user_data_size = read_big_endian<uint64_t>(&header_buf[40]);
 
-    ifs.ignore(system_data_size);
-    user_data_buf.resize(user_data_size);
-    ifs.read(&user_data_buf[0], user_data_size);
-  } catch(std::ios_base::failure& e) {
-    std::cerr << "Input stream reached end of file." << std::endl;
-    return false;
+    uint64_t system_data_size = read_big_endian<uint64_t>(&header_buf[32]);
+    system_data_buf.resize(system_data_size);
+    ifs.read(&system_data_buf[0], system_data_size);
+
+    uint64_t user_data_size = read_big_endian<uint64_t>(&header_buf[40]);
+    m.user_data_.resize(user_data_size);
+    ifs.read(&m.user_data_[0], user_data_size);
+  } catch (std::ios_base::failure& e) {
+    throw runtime_error("Input stream reached end of file.");
   }
+
   if (ifs.peek() != -1) {
     std::ifstream::pos_type pos = ifs.tellg();
-    std::cerr << "Input stream remains. Position: " << pos << std::endl;
-    return false;
+    throw runtime_error("Input stream remains. Position: " +
+        lexical_cast<std::string>(pos));
   }
   ifs.close();
-  
-  msgpack::unpacked msg;
-  msgpack::unpack(&msg, user_data_buf.data(), user_data_buf.size());
-  msgpack::object obj = msg.get();
 
-  T data;
+  msgpack::unpacked msg;
+  msgpack::unpack(&msg, system_data_buf.data(), system_data_buf.size());
+  msgpack::object system_data = msg.get();
+  std::string config;
+  system_data.via.array.ptr[2].convert(&m.type_);
+  system_data.via.array.ptr[4].convert(&config);
+  m.config_ = jubatus::core::common::jsonconfig::config(
+      jubatus::util::lang::lexical_cast<
+          jubatus::util::text::json::json>(config));
+}
+
+template <typename T, typename D>
+void dump(model& m, jubatus::util::text::json::json& js) {
+  msgpack::unpacked msg_user;
+  msgpack::unpack(&msg_user, m.user_data_.data(), m.user_data_.size());
+
   // obj[0] is the version of the saved model file
-  obj.via.array.ptr[1].convert(&data);
+  T data;
+  msg_user.get().via.array.ptr[1].convert(&data);
 
   D dump(data);
   js = jubatus::util::text::json::to_json(dump);
-  return true;
 }
 
-int run(const std::string& path, const std::string& type) try {
+int run(const std::string& path) try {
   std::ifstream ifs(path.c_str());
   if (!ifs) {
-    std::cerr << "Cannot open: " << path << std::endl;
-    return -1;
+    throw runtime_error("Cannot open: " + path);
   }
 
+  model m;
   jubatus::util::text::json::json js;
-  bool result;
-  if (type == "classifier") {
-    result = read_and_dump<classifier<local_storage>,
-        classifier_dump<local_storage, local_storage_dump> >(ifs, js);
-  } else if (type == "inverted_index") {
-    result = read_and_dump<
-      recommender<inverted_index>,
-      recommender_dump<inverted_index_recommender_dump> >(
-            ifs, js);
-  } else {
-    std::cerr << "Unsupported file format: " << type << std::endl;
-    return -1;
+
+  try {
+    read(ifs, m);
+  } catch (const std::exception& e) {
+    throw runtime_error(std::string("invalid model file structure: ") +
+                        e.what());
   }
 
-  if (!result) {
-    return -1;
+  if (m.type_ == "classifier" || m.type_ == "regression") {
+    dump<classifier<local_storage>,
+        classifier_dump<local_storage, local_storage_dump> >(m, js);
+  } else if (m.type_ == "recommender") {
+    std::string method;
+    from_json<std::string>(m.config_["method"].get(), method);
+    if (method == "inverted_index") {
+      dump<recommender<inverted_index>,
+           recommender_dump<inverted_index_recommender_dump> >(m, js);
+    } else {
+      throw runtime_error("recommender method \"" + method +
+                          "\" is not supported for dump");
+    }
+  } else if (m.type_ == "anomaly") {
+    std::string method, backend_method;
+    from_json<std::string>(m.config_["method"].get(), method);
+    from_json<std::string>(m.config_["parameter"]["method"].get(),
+                           backend_method);
+    if (method == "lof") {
+      if (backend_method == "inverted_index") {
+        dump<
+            anomaly<lof<inverted_index> >,
+            anomaly_dump<lof<inverted_index>, lof_dump<
+                inverted_index, inverted_index_recommender_dump> > >(m, js);
+      } else {
+        throw runtime_error("backend recommender method \"" + backend_method +
+                            "\" is not supported for dump");
+      }
+    } else {
+      throw runtime_error("anomaly method \"" + method +
+                          "\" is not supported for dump");
+    }
+  } else {
+    throw runtime_error("type \"" + m.type_ +
+                        "\" is not supported for dump");
   }
+
   js.pretty(std::cout, true);
   return 0;
-} catch (msgpack::type_error& e) {
-  std::cerr << "Cannot read the file \"" << path
-            << "\" as \"" << type << "\"" << std::endl;
+} catch (const std::exception& e) {
+  std::cerr << "Error: failed to dump \"" << path
+            << "\": " << e.what() << std::endl;
   return -1;
 }
 
@@ -114,11 +170,7 @@ int run(const std::string& path, const std::string& type) try {
 int main(int argc, char* argv[]) {
   cmdline::parser p;
   p.add<std::string>("input", 'i', "Input file");
-  p.add<std::string>("type", 't', "Format type", false, "classifier",
-                     cmdline::oneof<std::string>("classifier",
-                                                 "inverted_index"));
   p.parse_check(argc, argv);
 
-  return jubatus::dump::run(p.get<std::string>("input"),
-                            p.get<std::string>("type"));
+  return jubatus::dump::run(p.get<std::string>("input"));
 }

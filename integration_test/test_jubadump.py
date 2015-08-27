@@ -62,6 +62,7 @@ class JubadumpAnomalyTest(JubaTestCase, JubadumpTestBase):
   def get_config(self):
     config = get_configs(ANOMALY)['lof']
     config['parameter']['method'] = 'inverted_index'
+    config['parameter']['parameter'] = {}
     return (ANOMALY, config)
 
   def do_training(self, target, cli):

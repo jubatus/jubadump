@@ -11,7 +11,7 @@ To Run Unit Tests
 To Run Integration Tests
 ---------------------------------
 
-Integration tests are written in [jubatest](https://github.com/kmaehashi/jubatest/).
+Integration tests are written in `jubatest <https://github.com/kmaehashi/jubatest/>`_.
 
 ::
 

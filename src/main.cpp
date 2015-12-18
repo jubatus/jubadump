@@ -118,18 +118,7 @@ int run(const std::string& path) try {
                         e.what());
   }
 
-  if (m.type_ == "classifier") {
-    std::string method;
-    from_json<std::string>(m.config_["method"].get(), method);
-    if (method != "NN") {
-      dump<classifier<local_storage>,
-          classifier_dump<local_storage, local_storage_dump> >(m, js);
-    } else {
-      throw runtime_error("classifier method \"" + method +
-                          "\" is not supported for dump");
-    }
-  } else if (m.type_ == "regression") {
-    // same model data structure as classifier
+  if (m.type_ == "classifier" || m.type_ == "regression") {
     dump<classifier<local_storage>,
         classifier_dump<local_storage, local_storage_dump> >(m, js);
   } else if (m.type_ == "recommender") {

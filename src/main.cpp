@@ -135,7 +135,7 @@ int run(const std::string& path) try {
   } else if (m.type_ == "recommender") {
     std::string method;
     from_json<std::string>(m.config_["method"].get(), method);
-    if (method == "inverted_index") {
+    if (method == "inverted_index" || method == "inverted_index_euclid") {
       dump<recommender<inverted_index>,
            recommender_dump<inverted_index_recommender_dump> >(m, js);
     } else {

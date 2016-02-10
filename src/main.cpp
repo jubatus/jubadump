@@ -32,6 +32,7 @@
 #include "jubatus/dump/classifier.hpp"
 #include "jubatus/dump/recommender.hpp"
 #include "jubatus/dump/anomaly.hpp"
+#include "jubatus/dump/unsupported.hpp"
 
 using std::runtime_error;
 using jubatus::core::common::read_big_endian;
@@ -154,8 +155,13 @@ int run(const std::string& path) try {
             anomaly_dump<lof<inverted_index>, lof_dump<
                 inverted_index, inverted_index_recommender_dump> > >(m, js);
       } else {
-        throw runtime_error("backend recommender method \"" + backend_method +
-                            "\" is not supported for dump");
+        std::cerr << "Warning: backend recommender method \""
+                  << backend_method << "\" is not supported for dump"
+                  << std::endl;
+        dump<
+            anomaly<lof<unsupported_data> >,
+            anomaly_dump<lof<unsupported_data>, lof_dump<
+                unsupported_data, unsupported_data_dump> > >(m, js);
       }
     } else {
       throw runtime_error("anomaly method \"" + method +

@@ -164,8 +164,12 @@ int run(const std::string& path) try {
                 unsupported_data, unsupported_data_dump> > >(m, js);
       }
     } else {
-      throw runtime_error("anomaly method \"" + method +
-                          "\" is not supported for dump");
+      std::cerr << "Warning: anomaly method \""
+                << method << "\" is not fully supported for dump"
+                << std::endl;
+      dump<
+          anomaly<unsupported_data>,
+          anomaly_dump<unsupported_data, unsupported_data_dump> >(m, js);
     }
   } else {
     throw runtime_error("type \"" + m.type_ +

@@ -44,30 +44,30 @@ Format
   - ``weights``
 
     - ``version_number`` : Version of model. This value will be updated by MIX.
-    - ``document_frequencies`` : Frequency of each features in data inputted so far.
+    - ``document_frequencies`` : Frequency of each feature in data inputted so far.
     - ``document_count`` : Number of all documents. This value will be used in calculation of global_weight(idf).
 - classifier, regression
 
   - ``storage``
 
-    - ``weight`` : Weights of each features and each labels in data inputted so far.
+    - ``weight`` : Weights of each feature and each label in data inputted so far.
 - recommender (inverted_index)
 
   - ``index``
 
     - ``storage``
 
-      - ``inv``: IDs of each features
+      - ``inv``: IDs of each feature
     - ``original``
 
-      - ``inv`` : Features of each IDs
+      - ``inv`` : Features of each ID
 - anomaly (lof based on inverted_index)
 
   - ``storage``
 
     - ``lof_records``
 
-      - ``entry``: kdist and lrd value of each IDs
+      - ``entry``: kdist and lrd value of each ID
     - ``nn_records`` : Refer to recommender for the list of values.
 
 

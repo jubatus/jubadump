@@ -57,7 +57,7 @@ Format
 
     - ``storage``
 
-      - ``inv``: IDs of each feature
+      - ``inv``: No data
     - ``original``
 
       - ``inv`` : Features of each ID

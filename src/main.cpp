@@ -32,6 +32,7 @@
 #include "jubatus/dump/classifier.hpp"
 #include "jubatus/dump/recommender.hpp"
 #include "jubatus/dump/anomaly.hpp"
+#include "jubatus/dump/nearest_neighbor.hpp"
 #include "jubatus/dump/unsupported.hpp"
 
 using std::runtime_error;
@@ -171,6 +172,8 @@ int run(const std::string& path) try {
           anomaly<unsupported_data>,
           anomaly_dump<unsupported_data, unsupported_data_dump> >(m, js);
     }
+  } else if (m.type_ == "nearest_neighbor") {
+    dump<nearest_neighbor, nearest_neighbor_dump>(m, js);
   } else {
     throw runtime_error("type \"" + m.type_ +
                         "\" is not supported for dump");

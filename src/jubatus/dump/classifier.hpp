@@ -26,6 +26,7 @@
 
 #include "types.hpp"
 #include "weight_manager.hpp"
+#include "labels.hpp"
 
 namespace jubatus {
 namespace dump {
@@ -58,6 +59,28 @@ struct local_storage_dump {
   template <class Ar>
   void serialize(Ar& ar) {
     ar & JUBA_MEMBER(weight);
+  }
+};
+
+struct linear_classifier {
+  local_storage storage;
+  labels label_storage;
+
+  MSGPACK_DEFINE(storage, label_storage);
+};
+
+struct linear_classifier_dump {
+  explicit linear_classifier_dump(const linear_classifier& classifier)
+      : storage(classifier.storage),
+        label(classifier.label_storage) {
+  }
+
+  local_storage_dump storage;
+  labels_dump label;
+
+  template <class Ar>
+  void serialize(Ar& ar) {
+    ar & JUBA_MEMBER(storage) & JUBA_MEMBER(label);
   }
 };
 

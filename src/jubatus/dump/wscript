@@ -7,6 +7,7 @@ def build(bld):
             'nearest_neighbor.cpp',
             'weight_manager.cpp',
             'column_table.cpp',
+            'labels.cpp',
             ],
         target = 'jubatus_dump'
         )

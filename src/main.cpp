@@ -124,8 +124,8 @@ int run(const std::string& path) try {
     std::string method;
     from_json<std::string>(m.config_["method"].get(), method);
     if (method != "NN") {
-      dump<classifier<local_storage>,
-          classifier_dump<local_storage, local_storage_dump> >(m, js);
+      dump<classifier<linear_classifier>,
+          classifier_dump<linear_classifier, linear_classifier_dump> >(m, js);
     } else {
       throw runtime_error("classifier method \"" + method +
                           "\" is not supported for dump");

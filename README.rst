@@ -46,7 +46,18 @@ Format
     - ``version_number`` : Version of model. This value will be updated by MIX.
     - ``document_frequencies`` : Frequency of each feature in data inputted so far.
     - ``document_count`` : Number of all documents. This value will be used in calculation of global_weight(idf).
-- classifier, regression
+- classifier
+
+  - ``storage``
+
+    - ``labels``
+
+      - ``version_number`` : Version of model. This value will be updated by MIX.
+      - ``label_count`` : Number of traind data of each label.
+    - ``storage``
+
+      - ``weight`` : Weights of each feature and each label in data inputted so far.
+- regression
 
   - ``storage``
 

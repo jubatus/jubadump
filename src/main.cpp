@@ -123,7 +123,8 @@ int run(const std::string& path) try {
   if (m.type_ == "classifier") {
     std::string method;
     from_json<std::string>(m.config_["method"].get(), method);
-    if (method != "NN") {
+    if (method != "NN" && method != "nearest_neighbor" &&
+        method != "cosine" && method != "euclidean") {
       dump<classifier<linear_classifier>,
           classifier_dump<linear_classifier, linear_classifier_dump> >(m, js);
     } else {

@@ -32,6 +32,7 @@
 #include "jubatus/dump/classifier.hpp"
 #include "jubatus/dump/recommender.hpp"
 #include "jubatus/dump/anomaly.hpp"
+#include "jubatus/dump/nearest_neighbor.hpp"
 #include "jubatus/dump/unsupported.hpp"
 
 using std::runtime_error;
@@ -122,9 +123,10 @@ int run(const std::string& path) try {
   if (m.type_ == "classifier") {
     std::string method;
     from_json<std::string>(m.config_["method"].get(), method);
-    if (method != "NN") {
-      dump<classifier<local_storage>,
-          classifier_dump<local_storage, local_storage_dump> >(m, js);
+    if (method != "NN" && method != "nearest_neighbor" &&
+        method != "cosine" && method != "euclidean") {
+      dump<classifier<linear_classifier>,
+          classifier_dump<linear_classifier, linear_classifier_dump> >(m, js);
     } else {
       throw runtime_error("classifier method \"" + method +
                           "\" is not supported for dump");
@@ -171,6 +173,8 @@ int run(const std::string& path) try {
           anomaly<unsupported_data>,
           anomaly_dump<unsupported_data, unsupported_data_dump> >(m, js);
     }
+  } else if (m.type_ == "nearest_neighbor") {
+    dump<nearest_neighbor, nearest_neighbor_dump>(m, js);
   } else {
     throw runtime_error("type \"" + m.type_ +
                         "\" is not supported for dump");

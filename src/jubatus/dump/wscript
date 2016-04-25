@@ -4,7 +4,10 @@ def build(bld):
             'classifier.cpp',
             'recommender.cpp',
             'anomaly.cpp',
+            'nearest_neighbor.cpp',
             'weight_manager.cpp',
+            'column_table.cpp',
+            'labels.cpp',
             ],
         target = 'jubatus_dump'
         )

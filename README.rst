@@ -30,6 +30,8 @@ Usage
 1. Call save RPC and save your model.
 2. Execute jubadump.
 
+::
+
     usage: jubadump --input=string [options] ...
     options:
       -i, --input    Input file (string)
@@ -46,6 +48,7 @@ Format
     - ``version_number`` : Version of model. This value will be updated by MIX.
     - ``document_frequencies`` : Frequency of each feature in data inputted so far.
     - ``document_count`` : Number of all documents. This value will be used in calculation of global_weight(idf).
+
 - classifier
 
   - ``storage``
@@ -57,11 +60,13 @@ Format
     - ``storage``
 
       - ``weight`` : Weights of each feature and each label in data inputted so far.
+
 - regression
 
   - ``storage``
 
     - ``weight`` : Weights of each feature and each label in data inputted so far.
+
 - recommender (inverted_index)
 
   - ``index``
@@ -72,6 +77,7 @@ Format
     - ``original``
 
       - ``inv`` : Features of each ID
+
 - anomaly (lof based on inverted_index)
 
   - ``storage``

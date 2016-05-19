@@ -87,6 +87,21 @@ Format
       - ``entry``: kdist and lrd value of each ID
     - ``nn_records`` : Refer to recommender for the list of values.
 
+- nearest_neighbor
+
+  - ``table``
+
+    - ``clock``: generation of the table (number of updates)
+
+    - ``schema``: schema of the table
+
+    - ``data``: records of each ID
+
+      - ``version``: generation of the record
+
+      - ``values``: data of each column for the ID; multiple 64-bit integers are used to represent the bit vector for column longer than 64 bit.
+
+      - ``owner``: identifier of the server who has a permission to modify the record
 
 License
 =======

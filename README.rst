@@ -3,7 +3,7 @@
 ==========
 
 ``jubadump`` converts saved jubatus internal model to json.
-``jubadump`` supports only classifier (except for NN), regression, recommender (inverted_index) and anomaly (lof + inverted_index) model.
+``jubadump`` supports only classifier (except for NN), regression, recommender (inverted_index), anomaly (lof + inverted_index) and nearest_neighbor model.
 
 Requirements
 ============

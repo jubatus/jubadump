@@ -3,7 +3,7 @@
 ==========
 
 ``jubadump`` converts saved jubatus internal model to json.
-``jubadump`` supports only classifier (except for NN), regression, recommender (inverted_index) and anomaly (lof + inverted_index) model.
+``jubadump`` supports only classifier (except for NN), regression, recommender (inverted_index), anomaly (lof + inverted_index) and nearest_neighbor model.
 
 Requirements
 ============
@@ -30,6 +30,8 @@ Usage
 1. Call save RPC and save your model.
 2. Execute jubadump.
 
+::
+
     usage: jubadump --input=string [options] ...
     options:
       -i, --input    Input file (string)
@@ -46,6 +48,7 @@ Format
     - ``version_number`` : Version of model. This value will be updated by MIX.
     - ``document_frequencies`` : Frequency of each feature in data inputted so far.
     - ``document_count`` : Number of all documents. This value will be used in calculation of global_weight(idf).
+
 - classifier
 
   - ``storage``
@@ -57,11 +60,13 @@ Format
     - ``storage``
 
       - ``weight`` : Weights of each feature and each label in data inputted so far.
+
 - regression
 
   - ``storage``
 
     - ``weight`` : Weights of each feature and each label in data inputted so far.
+
 - recommender (inverted_index)
 
   - ``index``
@@ -72,6 +77,7 @@ Format
     - ``original``
 
       - ``inv`` : Features of each ID
+
 - anomaly (lof based on inverted_index)
 
   - ``storage``
@@ -81,6 +87,21 @@ Format
       - ``entry``: kdist and lrd value of each ID
     - ``nn_records`` : Refer to recommender for the list of values.
 
+- nearest_neighbor
+
+  - ``table``
+
+    - ``clock``: generation of the table (number of updates)
+
+    - ``schema``: schema of the table
+
+    - ``data``: records of each ID
+
+      - ``version``: generation of the record
+
+      - ``values``: data of each column for the ID; multiple 64-bit integers are used to represent the bit vector for column longer than 64 bit.
+
+      - ``owner``: identifier of the server who has a permission to modify the record
 
 License
 =======

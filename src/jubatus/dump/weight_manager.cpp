@@ -22,9 +22,12 @@ namespace jubatus {
 namespace dump {
 
 weight_manager_dump::weight_manager_dump(const weight_manager& weights) {
+  // document_count
   document_count =
       weights.diff_weights_.document_count_
       + weights.master_weights_.document_count_;
+
+  // document_frequencies
   document_frequencies = weights.master_weights_.document_frequencies_.data_;
   const std::map<std::string, double>&
       diff = weights.diff_weights_.document_frequencies_.data_;
@@ -32,6 +35,42 @@ weight_manager_dump::weight_manager_dump(const weight_manager& weights) {
            it = diff.begin(); it != diff.end(); ++it) {
     document_frequencies[it->first] += it->second;
   }
+
+  // group_records (diff)
+  {
+    const std::map<std::string, double>& master_group_freq =
+        weights.master_weights_.group_frequencies_.data_;
+    const std::map<std::string, double>& master_group_length =
+        weights.master_weights_.group_total_lengths_.data_;
+
+    for (std::map<std::string, double>::const_iterator
+         it = master_group_freq.begin(); it != master_group_freq.end(); ++it) {
+      // frequency
+      group_frequencies[it->first] += it->second;
+
+      // total length (keys in group_freq must be in group_length)
+      group_total_lengths[it->first] += master_group_length.at(it->first);
+    }
+  }
+
+  // group records (master)
+  {
+    const std::map<std::string, double>& diff_group_freq =
+        weights.diff_weights_.group_frequencies_.data_;
+    const std::map<std::string, double>& diff_group_length =
+        weights.diff_weights_.group_total_lengths_.data_;
+
+    for (std::map<std::string, double>::const_iterator
+         it = diff_group_freq.begin(); it != diff_group_freq.end(); ++it) {
+      // frequency
+      group_frequencies[it->first] += it->second;
+
+      // total length (keys in group_freq must be in group_length)
+      group_total_lengths[it->first] += diff_group_length.at(it->first);
+    }
+  }
+
+  // version_number
   version_number = weights.version_.version_number_;
 }
 

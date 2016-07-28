@@ -18,7 +18,8 @@ class JubadumpTestBase(object):
     proc.start()
 
     # assert that command exits with status = 0
-    self.assertEqual(proc.wait(model_data), 0)
+    exit_status = proc.wait(model_data)
+    self.assertEqual(exit_status, 0, 'jubadump exit with status {0}: {1}'.format(exit_status, proc.stderr))
 
     # assert that command prints valid JSON
     self.assertEqual(type(json.loads(proc.stdout)), dict)

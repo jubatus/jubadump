@@ -43,11 +43,13 @@ Format
 
 - common
 
-  - ``weights``
+  - ``weights`` (some values are available only when IDF/BM25 weighting is used)
 
     - ``version_number`` : Version of model. This value will be updated by MIX.
     - ``document_frequencies`` : Frequency of each feature in data inputted so far.
     - ``document_count`` : Number of all documents. This value will be used in calculation of global_weight(idf).
+    - ``group_frequencies`` : Frequency of each Datum (string_values) key in data inputted so far.
+    - ``group_total_length`` : Number of total features extracted from each Datum (string_values) key in data inputted so far.
 
 - classifier
 

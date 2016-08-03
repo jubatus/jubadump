@@ -45,13 +45,17 @@ struct weight_manager_dump {
   uint64_t version_number;
   uint32_t document_count;
   std::map<std::string, double> document_frequencies;
+  std::map<std::string, double> group_frequencies;
+  std::map<std::string, double> group_total_lengths;
 
   template <class Ar>
   void serialize(Ar& ar) {
     ar
         & JUBA_MEMBER(version_number)
         & JUBA_MEMBER(document_count)
-        & JUBA_MEMBER(document_frequencies);
+        & JUBA_MEMBER(document_frequencies)
+        & JUBA_MEMBER(group_frequencies)
+        & JUBA_MEMBER(group_total_lengths);
   }
 };
 

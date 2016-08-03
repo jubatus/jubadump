@@ -31,7 +31,7 @@ TEST(weight_manager, trivial) {
     jubatus::core::fv_converter::weight_manager wm;
     jubatus::core::common::sfv_t fv;
     fv.push_back(std::make_pair("a", 1));
-    wm.update_weight(fv);
+    wm.update_weight(fv, true, true);
 
     jubatus::core::framework::stream_writer<msgpack::sbuffer> st(buf);
     jubatus::core::framework::jubatus_packer jp(st);

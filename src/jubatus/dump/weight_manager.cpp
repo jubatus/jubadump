@@ -36,37 +36,25 @@ weight_manager_dump::weight_manager_dump(const weight_manager& weights) {
     document_frequencies[it->first] += it->second;
   }
 
-  // group_records (diff)
+  // group_frequencies
+  group_frequencies = weights.master_weights_.group_frequencies_.data_;
   {
-    const std::map<std::string, double>& master_group_freq =
-        weights.master_weights_.group_frequencies_.data_;
-    const std::map<std::string, double>& master_group_length =
-        weights.master_weights_.group_total_lengths_.data_;
-
+    const std::map<std::string, double>& diff_freq =
+        weights.diff_weights_.group_frequencies_.data_;
     for (std::map<std::string, double>::const_iterator
-         it = master_group_freq.begin(); it != master_group_freq.end(); ++it) {
-      // frequency
+        it = diff_freq.begin(); it != diff_freq.end(); ++it) {
       group_frequencies[it->first] += it->second;
-
-      // total length (keys in group_freq must be in group_length)
-      group_total_lengths[it->first] += master_group_length.at(it->first);
     }
   }
 
-  // group records (master)
+  // group_total_lengths
+  group_total_lengths = weights.master_weights_.group_total_lengths_.data_;
   {
-    const std::map<std::string, double>& diff_group_freq =
-        weights.diff_weights_.group_frequencies_.data_;
-    const std::map<std::string, double>& diff_group_length =
+    const std::map<std::string, double>& diff_lengths =
         weights.diff_weights_.group_total_lengths_.data_;
-
     for (std::map<std::string, double>::const_iterator
-         it = diff_group_freq.begin(); it != diff_group_freq.end(); ++it) {
-      // frequency
-      group_frequencies[it->first] += it->second;
-
-      // total length (keys in group_freq must be in group_length)
-      group_total_lengths[it->first] += diff_group_length.at(it->first);
+         it = diff_lengths.begin(); it != diff_lengths.end(); ++it) {
+      group_total_lengths[it->first] += it->second;
     }
   }
 

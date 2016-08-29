@@ -22,9 +22,12 @@ namespace jubatus {
 namespace dump {
 
 weight_manager_dump::weight_manager_dump(const weight_manager& weights) {
+  // document_count
   document_count =
       weights.diff_weights_.document_count_
       + weights.master_weights_.document_count_;
+
+  // document_frequencies
   document_frequencies = weights.master_weights_.document_frequencies_.data_;
   const std::map<std::string, double>&
       diff = weights.diff_weights_.document_frequencies_.data_;
@@ -32,6 +35,30 @@ weight_manager_dump::weight_manager_dump(const weight_manager& weights) {
            it = diff.begin(); it != diff.end(); ++it) {
     document_frequencies[it->first] += it->second;
   }
+
+  // group_frequencies
+  group_frequencies = weights.master_weights_.group_frequencies_.data_;
+  {
+    const std::map<std::string, double>& diff_freq =
+        weights.diff_weights_.group_frequencies_.data_;
+    for (std::map<std::string, double>::const_iterator
+        it = diff_freq.begin(); it != diff_freq.end(); ++it) {
+      group_frequencies[it->first] += it->second;
+    }
+  }
+
+  // group_total_lengths
+  group_total_lengths = weights.master_weights_.group_total_lengths_.data_;
+  {
+    const std::map<std::string, double>& diff_lengths =
+        weights.diff_weights_.group_total_lengths_.data_;
+    for (std::map<std::string, double>::const_iterator
+         it = diff_lengths.begin(); it != diff_lengths.end(); ++it) {
+      group_total_lengths[it->first] += it->second;
+    }
+  }
+
+  // version_number
   version_number = weights.version_.version_number_;
 }
 

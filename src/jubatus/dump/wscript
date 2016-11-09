@@ -1,11 +1,11 @@
 def build(bld):
     bld.stlib(
         source = [
-            'classifier.cpp',
             'recommender.cpp',
             'anomaly.cpp',
-            'nearest_neighbor.cpp',
             'weight_manager.cpp',
+            'local_storage.cpp',
+            'local_storage_mixture.cpp',
             'column_table.cpp',
             'labels.cpp',
             ],

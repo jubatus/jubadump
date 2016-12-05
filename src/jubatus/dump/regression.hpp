@@ -27,7 +27,6 @@
 #include "types.hpp"
 #include "weight_manager.hpp"
 #include "local_storage_mixture.hpp"
-#include "regression.hpp"
 
 namespace jubatus {
 namespace dump {

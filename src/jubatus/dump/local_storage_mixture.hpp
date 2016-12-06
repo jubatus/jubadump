@@ -14,10 +14,41 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "nearest_neighbor.hpp"
+#ifndef JUBATUS_DUMP_LOCAL_STORAGE_MIXTURE_HPP_
+#define JUBATUS_DUMP_LOCAL_STORAGE_MIXTURE_HPP_
+
+#include <string>
+#include <map>
+
+#include <msgpack.hpp>
+#include <jubatus/util/data/serialization.h>
+
+#include "types.hpp"
+#include "local_storage.hpp"
 
 namespace jubatus {
 namespace dump {
 
+struct local_storage_mixture {
+  std::map<std::string, std::map<uint64_t, val3_t> > tbl_;
+  key_manager class2id_;
+  std::map<std::string, std::map<uint64_t, val3_t> > tbl_diff_;
+
+  MSGPACK_DEFINE(tbl_, class2id_, tbl_diff_);
+};
+
+struct local_storage_mixture_dump {
+  explicit local_storage_mixture_dump(const local_storage_mixture& storage);
+
+  std::map<std::string, std::map<std::string, val3_t> > weight;
+
+  template <class Ar>
+  void serialize(Ar& ar) {
+    ar & JUBA_MEMBER(weight);
+  }
+};
+
 }  // namespace dump
 }  // namespace jubatus
+
+#endif  // JUBATUS_DUMP_LOCAL_STORAGE_MIXTURE_HPP_

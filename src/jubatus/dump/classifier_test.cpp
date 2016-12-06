@@ -35,7 +35,8 @@ TEST(classifier, trivial) {
   msgpack::sbuffer buf;
   {
     jubatus::util::lang::shared_ptr<jubatus::core::storage::storage_base> s
-        = jubatus::core::storage::storage_factory::create_storage("local");
+        = jubatus::core::storage::storage_factory::create_storage(
+            "local_mixture");
 
     s->set3("f1", "k1", jubatus::core::storage::val3_t(1.0, 2.0, 3.0));
 
@@ -49,14 +50,14 @@ TEST(classifier, trivial) {
     msgpack::unpacked msg;
     msgpack::unpack(&msg, buf.data(), buf.size());
     
-    local_storage s;
+    local_storage_mixture s;
     msg.get().convert(&s);
 
-    EXPECT_EQ(1u, s.tbl_.size());
-    EXPECT_EQ(1u, s.tbl_["f1"].size());
-    EXPECT_EQ(1.0, s.tbl_["f1"][0].v1);
-    EXPECT_EQ(2.0, s.tbl_["f1"][0].v2);
-    EXPECT_EQ(3.0, s.tbl_["f1"][0].v3);
+    EXPECT_EQ(1u, s.tbl_diff_.size());
+    EXPECT_EQ(1u, s.tbl_diff_["f1"].size());
+    EXPECT_EQ(1.0, s.tbl_diff_["f1"][0].v1);
+    EXPECT_EQ(2.0, s.tbl_diff_["f1"][0].v2);
+    EXPECT_EQ(3.0, s.tbl_diff_["f1"][0].v3);
   }
 }
 

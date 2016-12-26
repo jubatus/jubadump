@@ -30,6 +30,7 @@
 #include "third_party/cmdline/cmdline.h"
 
 #include "jubatus/dump/classifier.hpp"
+#include "jubatus/dump/regression.hpp"
 #include "jubatus/dump/recommender.hpp"
 #include "jubatus/dump/anomaly.hpp"
 #include "jubatus/dump/nearest_neighbor.hpp"
@@ -132,9 +133,16 @@ int run(const std::string& path) try {
                           "\" is not supported for dump");
     }
   } else if (m.type_ == "regression") {
-    // same model data structure as classifier
-    dump<classifier<local_storage>,
-        classifier_dump<local_storage, local_storage_dump> >(m, js);
+    std::string method;
+    from_json<std::string>(m.config_["method"].get(), method);
+    if (method != "NN" && method != "nearest_neighbor" &&
+        method != "cosine" && method != "euclidean") {
+      dump<regression<linear_regression>,
+          regression_dump<linear_regression, linear_regression_dump> >(m, js);
+    } else {
+      throw runtime_error("regression method \"" + method +
+                          "\" is not supported for dump");
+    }
   } else if (m.type_ == "recommender") {
     std::string method;
     from_json<std::string>(m.config_["method"].get(), method);

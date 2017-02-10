@@ -4,5 +4,6 @@
 *.pyc
 .unittest-gtest
 .waf-*
+.waf3-*
 build
 .lock-waf*

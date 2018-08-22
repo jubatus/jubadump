@@ -30,10 +30,10 @@
 namespace jubatus {
 namespace dump {
 
-typedef std::map<uint64_t, float> row_t;
+typedef std::map<uint64_t, double> row_t;
 typedef std::map<std::string, row_t> tbl_t;
 
-typedef std::map<uint64_t, float> imap_float_t;
+typedef std::map<uint64_t, double> imap_double_t;
 
 struct sparse_matrix_storage {
   tbl_t tbl_;
@@ -45,8 +45,8 @@ struct sparse_matrix_storage {
 struct inverted_index_storage {
   tbl_t inv_;
   tbl_t inv_diff_;
-  imap_float_t column2norm_;
-  imap_float_t column2norm_diff_;
+  imap_double_t column2norm_;
+  imap_double_t column2norm_diff_;
   key_manager column2id_;
 
   MSGPACK_DEFINE(inv_, inv_diff_, column2norm_, column2norm_diff_, column2id_);
@@ -58,8 +58,8 @@ struct inverted_index_dump {
   explicit inverted_index_dump(const sparse_matrix_storage& storage);
 
   struct column {
-    std::map<std::string, float> column;
-    float norm;
+    std::map<std::string, double> column;
+    double norm;
 
     template <class Ar>
     void serialize(Ar& ar) {
@@ -67,7 +67,7 @@ struct inverted_index_dump {
     }
   };
 
-  std::map<std::string, std::map<std::string, float> > inv;
+  std::map<std::string, std::map<std::string, double> > inv;
 
   template <class Ar>
   void serialize(Ar& ar) {

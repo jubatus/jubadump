@@ -29,8 +29,8 @@ namespace jubatus {
 namespace dump {
 
 struct lof_entry {
-  float kdist;
-  float lrd;
+  double kdist;
+  double lrd;
 
   MSGPACK_DEFINE(kdist, lrd);
 

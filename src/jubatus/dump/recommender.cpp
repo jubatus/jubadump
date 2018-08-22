@@ -30,7 +30,7 @@ namespace {
 void convert_table(
     const tbl_t& tbl,
     const unordered_map<uint64_t, std::string>& id2key,
-    std::map<std::string, std::map<std::string, float> >& inv) {
+    std::map<std::string, std::map<std::string, double> >& inv) {
   for (tbl_t::const_iterator it = tbl.begin();
        it != tbl.end(); ++it) {
     const std::string& feature = it->first;
@@ -49,7 +49,7 @@ void convert_table(
       }
 
       std::string id = id_it->second;
-      float value = it2->second;
+      double value = it2->second;
       inv[feature][id] = value;
     }
   }

@@ -50,7 +50,7 @@ struct bit_index_storage {
 };
 
 struct lsh {
-  jubatus::util::data::unordered_map<std::string, std::vector<float> >
+  jubatus::util::data::unordered_map<std::string, std::vector<double> >
     column2baseval_;
   bit_index_storage row2lshvals_;
 

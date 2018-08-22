@@ -48,7 +48,7 @@ struct keyword_weights {
   counter document_frequencies_;
   counter group_frequencies_;
   counter group_total_lengths_;
-  std::map<std::string, float> weights_;
+  std::map<std::string, double> weights_;
 
   MSGPACK_DEFINE(
       document_count_,
